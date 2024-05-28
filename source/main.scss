@@ -1,0 +1,116 @@
+
+/*
+Variáveis: 
+-> usa: $(nome da váriavel)
+-> --watch: dentro do package.json dentro do "sass" para não ficar rodando o "npm run sass" direto
+-> Vários arquivos podem ser criados para armazenar vários scss. Exemplo: reset.scss, main.css...
+*/
+
+/*
+Declarando variável: 
+$corPrincipal: #eee;
+
+Hover: 
+&:hover {}
+
+Classes:
+&.sucesso {}
+*/
+
+@use 'config/reset.scss';
+@use 'config/variaveis.scss';
+@use 'sass:math'; //serve para fazer cálculos no sass
+
+
+@mixin elementoForm() { //mixin para criar uma "regra" que será utilizada em vários locais
+    padding: 8px;       
+    display: block;
+    width: 100%;
+    margin-bottom: 16px;
+
+}
+/*dentro do () tem como passar um parâmetro (como no JS) que seria "estático"
+-> Exemplo: @mixin elementoForm($margin: 16px)
+O 'margin-bottom' receberia o valor do parâmetro: margin-bottom: $margin;
+*/
+
+//criar uma função (divisão)
+@function pixelParaEm($alvoEmPixel, $contextoEmPixel: 16px) {
+    @return math.div($alvoEmPixel, $contextoEmPixel)+em;
+}
+// div -> divisão
+// recebe primeiro o dividendo ($alvoEmPixel) depois o divisor ($contextoEmPixel)
+// tem que retornar o valor com '@return'
+
+
+body {
+    background-color: #eee;
+}
+
+.container {
+    max-width: 1024px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+header {
+    padding: 16px 0;
+    background-color: variaveis.$corPrincipal;
+    text-align: center;
+    color: #fff;
+}
+
+.form-container {
+    height: calc(100vh - 70px); //70px do tamanho do header
+    display: flex;
+    flex-direction: column;
+    align-items: center; //não vai funcionar porque usou o 'column', então vai alinhar na vertical
+    justify-content: center; // usando isso a gente consegue alinhar no meio da página
+    max-width: 760px;
+
+    h2 {
+       font-size: pixelParaEm(48px);
+       text-align: center; 
+    }
+
+    form {
+        width: 100%; //trouxe ele para cá (form) porque se colocasse no "input, button", não funcionaria. Eles não ocupam 100% da largura
+        max-width: 480px;
+        margin-top: 40px;
+
+        label {
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        input { //include para conseguir usar o @mixin
+            @include elementoForm();
+            background-color: transparent;
+            border: none;
+            border-bottom: 3px solid variaveis.$corPrincipal;
+        }
+
+        button {
+            @include elementoForm();
+            background-color: variaveis.$corSecundaria;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+
+            &:hover{ 
+                background-color: darken(variaveis.$corSecundaria, 15%);
+            }
+        }
+    }
+}
+//darken: deixar a cor mais escura 
+//ligthen: deixar a cor mais clara
+
+@media screen and (max-width: variaveis.$mobile) {
+    .container {
+        max-width: 80%;
+    }
+}
+
